@@ -1,0 +1,143 @@
+.image-cropper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, .6);
+}
+
+.image-cropper-operation-div {
+  background-color: white;
+  display: flex;
+  padding: 10px;
+}
+
+.image-cropper-image-div {
+  position: relative;
+  overflow: hidden;
+  max-height: 800px;
+  min-width: 500px;
+  min-height: 500px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.image-cropper-cropper-div {
+  position: absolute;
+  box-sizing: initial;
+  box-shadow: 0 0 0 1500px rgba(0, 0, 0, .6);
+  display: flex;
+  justify-content: space-between;
+  border: 3px dashed rgba(0, 0, 0, .7);
+}
+
+.image-cropper-pre-options {
+  padding: 0 10px 0 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.image-cropper-image-pre {
+  width: 200px;
+  height: 200px;
+  background-repeat: no-repeat;
+  background-color: rgba(0, 0, 0, .7);
+}
+
+.image-cropper-reset-button {
+  width: 120px;
+  height: 40px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+  background-color: #1890ff;
+  color: white;
+  border: 1px solid rgb(217, 217, 217);
+}
+
+.image-cropper-choose-shape {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.image-cropper-shapes {
+  margin-top: 5px;
+  display: flex;
+}
+
+.image-cropper-rect {
+  width: 40px;
+  height: 40px;
+  border: 3px dashed #333333;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.image-cropper-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  border: 3px dashed #333333;
+  margin-left: 20px;
+  cursor: pointer;
+}
+
+.image-cropper-change-size {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.image-cropper-size-range {
+  margin-top: 5px;
+}
+
+.image-cropper-change-size {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.image-cropper-size-range {
+  margin-top: 5px;
+}
+
+.image-cropper-options {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.image-cropper-button {
+  width: 80px;
+  height: 40px;
+  background-color: white;
+  border: 1px solid rgb(217, 217, 217);
+  cursor: pointer;
+  border-radius: 5px;
+  color: #333333;
+  font-size: 14px;
+}
+
+.image-cropper-sure {
+  background-color: #1890ff;
+  color: white;
+}
+
+.image-cropper-button:hover {
+  border: 1px solid #1890ff;
+}
+
+.image-cropper-canvas {
+  position: fixed;
+  top: -1000px;
+  left: -1000px;
+}

@@ -1,0 +1,25 @@
+{
+  "name": "image-better-corp",
+  "version": "1.0.2",
+  "description": "基于React的图片剪裁模态框",
+  "main": "index.js",
+  "respository": "https://github.com/jokercoplay/ImageBetterCorp.git",
+  "keywords": [
+    "react",
+    "图片剪裁",
+    "clip",
+    "crop"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel imageCrop.js -o index.js"
+  },
+  "author": "https://github.com/jokercoplay",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-1": "^6.24.1"
+  }
+}
