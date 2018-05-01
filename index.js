@@ -31,7 +31,7 @@ var CursorType = {
   CROSSHAIR: 'crosshair'
 };
 var OriginCropSize = 200;
-var MinCropperSize = 500;
+var MinImageSize = 500;
 var MaxCropperWidth = 1000;
 var MaxCropperHeight = 800;
 
@@ -63,8 +63,16 @@ var ImageCropper = function (_PureComponent) {
       var image = new Image();
       image.src = _this.props.imageUrl;
       image.onload = function () {
+        if (image.width < MinImageSize || image.width < MinImageSize) {
+          _this.props.onSave(image.src);
+          return;
+        }
         _this.setState({ image: image });
       };
+
+      addEventListener('resize', _this.getCropperPosition);
+    }, _this.componentWillUnmount = function () {
+      removeEventListener('resize', _this.getCropperPosition);
     }, _this.render = function () {
       return _react2.default.createElement(
         'div',
@@ -80,10 +88,10 @@ var ImageCropper = function (_PureComponent) {
       var imageDivWidth = 0;
       if (_this.state.image.width > _this.state.image.height) {
         imageDivWidth = _this.state.image.width > MaxCropperWidth ? MaxCropperWidth : _this.state.image.width;
-        imageDivHeight = imageDivWidth * (_this.state.image.height / _this.state.image.width);
+        imageDivHeight = imageDivWidth * _this.state.image.height / _this.state.image.width;
       } else {
         imageDivHeight = _this.state.image.height > MaxCropperHeight ? MaxCropperHeight : _this.state.image.height;
-        imageDivWidth = imageDivHeight / (_this.state.image.height / _this.state.image.width);
+        imageDivWidth = imageDivHeight * _this.state.image.width / _this.state.image.height;
       }
 
       return _react2.default.createElement(
@@ -100,7 +108,7 @@ var ImageCropper = function (_PureComponent) {
           className: 'image-cropper-image-div',
           onMouseEnter: _this.getCropperPosition,
           onMouseMove: _this.onChangeCrop,
-          onMouseLeave: _this.stopChangeCrop,
+          onMouseUp: _this.stopChangeCrop,
           style: {
             backgroundImage: 'url(' + _this.state.image.src + ')',
             width: imageDivWidth + 'px',
@@ -126,12 +134,11 @@ var ImageCropper = function (_PureComponent) {
         'div',
         { className: 'image-cropper-pre-options' },
         _react2.default.createElement('div', {
-          id: 'image-cropper-image-pre',
           className: 'image-cropper-image-pre',
           style: {
             borderRadius: '' + _this.state.cropBorderRadius,
             backgroundImage: 'url(' + _this.state.image.src + ')',
-            backgroundSize: (imageDivWidth < MinCropperSize ? MinCropperSize : imageDivWidth) * (OriginCropSize / _this.state.cropWidth) + 'px ' + (imageDivHeight < MinCropperSize ? MinCropperSize : imageDivHeight) * (OriginCropSize / _this.state.cropHeight) + 'px',
+            backgroundSize: imageDivWidth * (OriginCropSize / _this.state.cropWidth) + 'px ' + imageDivHeight * (OriginCropSize / _this.state.cropHeight) + 'px',
             backgroundPosition: -_this.state.cropLeft * (OriginCropSize / _this.state.cropWidth) + 'px ' + -_this.state.cropTop * (OriginCropSize / _this.state.cropHeight) + 'px'
           }
         }),
@@ -211,12 +218,10 @@ var ImageCropper = function (_PureComponent) {
         width: _this.state.cropWidth,
         height: _this.state.cropHeight
       });
-    }, _this.getCropperPosition = function (e) {
-      if (!_this.cropperDivPosition) {
-        _this.cropperDivPosition = e.target.getBoundingClientRect();
-      }
+    }, _this.getCropperPosition = function () {
+      _this.cropperDivPosition = document.getElementById('image-cropper-image-div').getBoundingClientRect();
     }, _this.onChangeCrop = function (e) {
-      if ((_this.cropperDivPosition.left + _this.state.cropWidth + _this.state.cropLeft - e.clientX < 10 || _this.cropperDivPosition.top + _this.state.cropHeight + _this.state.cropTop - e.clientY < 10) && _this.state.cropShape !== CropShape.CIRCLE) {
+      if (_this.state.cropShape !== CropShape.CIRCLE && (_this.cropperDivPosition.left + _this.state.cropLeft + _this.state.cropWidth - e.clientX < 10 || _this.cropperDivPosition.top + _this.state.cropTop + _this.state.cropHeight - e.clientY < 10)) {
         _this.setState({ cursorType: CursorType.CROSSHAIR });
       } else {
         _this.setState({ cursorType: CursorType.MOVE });
@@ -240,8 +245,8 @@ var ImageCropper = function (_PureComponent) {
         _this.setState({ canCropSizeChange: true });
       }
 
-      _this.mouseCropX = e.clientX - e.target.getBoundingClientRect().x;
-      _this.mouseCropY = e.clientY - e.target.getBoundingClientRect().y;
+      _this.mouseCropX = e.clientX - e.target.getBoundingClientRect().left;
+      _this.mouseCropY = e.clientY - e.target.getBoundingClientRect().top;
     }, _this.stopChangeCrop = function () {
       _this.setState({ canCropMove: false, canCropSizeChange: false });
     }, _this.onChangeCropSize = function (e) {

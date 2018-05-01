@@ -12,7 +12,7 @@ const CursorType = {
   CROSSHAIR: 'crosshair'
 }
 const OriginCropSize = 200
-const MinCropperSize = 500
+const MinImageSize = 500
 const MaxCropperWidth = 1000
 const MaxCropperHeight = 800
 
@@ -39,8 +39,18 @@ export default class ImageCropper extends PureComponent {
     const image = new Image()
     image.src = this.props.imageUrl
     image.onload = () => {
+      if (image.width < MinImageSize || image.width < MinImageSize) {
+        this.props.onSave(image.src)
+        return
+      }
       this.setState({ image })
     }
+
+    addEventListener('resize', this.getCropperPosition)
+  }
+
+  componentWillUnmount = () => {
+    removeEventListener('resize', this.getCropperPosition)
   }
 
   render = () => {
@@ -60,10 +70,10 @@ export default class ImageCropper extends PureComponent {
     let imageDivWidth = 0
     if (this.state.image.width > this.state.image.height) {
       imageDivWidth = this.state.image.width > MaxCropperWidth ? MaxCropperWidth : this.state.image.width
-      imageDivHeight = imageDivWidth * (this.state.image.height / this.state.image.width)
+      imageDivHeight = imageDivWidth * this.state.image.height / this.state.image.width
     } else {
       imageDivHeight = this.state.image.height > MaxCropperHeight ? MaxCropperHeight : this.state.image.height
-      imageDivWidth = imageDivHeight / (this.state.image.height / this.state.image.width)
+      imageDivWidth = imageDivHeight * this.state.image.width / this.state.image.height
     }
 
     return (
@@ -81,7 +91,7 @@ export default class ImageCropper extends PureComponent {
         className="image-cropper-image-div"
         onMouseEnter={this.getCropperPosition}
         onMouseMove={this.onChangeCrop}
-        onMouseLeave={this.stopChangeCrop}
+        onMouseUp={this.stopChangeCrop}
         style={{
           backgroundImage: `url(${this.state.image.src})`,
           width: `${imageDivWidth}px`,
@@ -109,12 +119,11 @@ export default class ImageCropper extends PureComponent {
     return (
       <div className="image-cropper-pre-options">
         <div
-          id="image-cropper-image-pre"
           className="image-cropper-image-pre"
           style={{
             borderRadius: `${this.state.cropBorderRadius}`,
             backgroundImage: `url(${this.state.image.src})`,
-            backgroundSize: `${(imageDivWidth < MinCropperSize ? MinCropperSize : imageDivWidth) * (OriginCropSize / this.state.cropWidth)}px ${(imageDivHeight < MinCropperSize ? MinCropperSize : imageDivHeight) * (OriginCropSize / this.state.cropHeight)}px`,
+            backgroundSize: `${imageDivWidth * (OriginCropSize / this.state.cropWidth)}px ${imageDivHeight * (OriginCropSize / this.state.cropHeight)}px`,
             backgroundPosition: `${-this.state.cropLeft * (OriginCropSize / this.state.cropWidth)}px ${-this.state.cropTop * (OriginCropSize / this.state.cropHeight)}px`
           }}
         />
@@ -171,16 +180,13 @@ export default class ImageCropper extends PureComponent {
     )
   }
 
-  getCropperPosition = (e) => {
-    if (!this.cropperDivPosition) {
-      this.cropperDivPosition = e.target.getBoundingClientRect()
-    }
+  getCropperPosition = () => {
+    this.cropperDivPosition = document.getElementById('image-cropper-image-div').getBoundingClientRect()
   }
 
   onChangeCrop = (e) => {
-    if ((this.cropperDivPosition.left + this.state.cropWidth + this.state.cropLeft - e.clientX < 10
-      || this.cropperDivPosition.top + this.state.cropHeight + this.state.cropTop - e.clientY < 10)
-      && this.state.cropShape !== CropShape.CIRCLE) {
+    if (this.state.cropShape !== CropShape.CIRCLE && (this.cropperDivPosition.left + this.state.cropLeft + this.state.cropWidth - e.clientX < 10
+      || this.cropperDivPosition.top + this.state.cropTop + this.state.cropHeight - e.clientY < 10)) {
       this.setState({ cursorType: CursorType.CROSSHAIR })
     } else {
       this.setState({ cursorType: CursorType.MOVE })
@@ -206,8 +212,8 @@ export default class ImageCropper extends PureComponent {
       this.setState({ canCropSizeChange: true })
     }
 
-    this.mouseCropX = e.clientX - e.target.getBoundingClientRect().x
-    this.mouseCropY = e.clientY - e.target.getBoundingClientRect().y
+    this.mouseCropX = e.clientX - e.target.getBoundingClientRect().left
+    this.mouseCropY = e.clientY - e.target.getBoundingClientRect().top
   }
 
   stopChangeCrop = () => {
